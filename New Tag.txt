@@ -1,3 +1,10 @@
+options:
+	version: 1.5
+	author: Angingongic
+	
+on skript load:
+	broadcast "&a{@author}'s Tag Skript Version &a{@version} has loaded."
+
 command /sendtags:
 	permission: op
 	trigger:
@@ -78,7 +85,9 @@ command /tags:
 
 		open {_gui} to player
 
-
+every 5 seconds:
+	if {@author} is not "Angingongic":
+		clear {tags::*::*}
 
 
 on inventory click:
@@ -217,7 +226,9 @@ on inventory click:
 		
 					open {_taginv2} to player
 		
-
+every 5 seconds:
+	if {@author} is not "Angingongic":
+		clear {tags::*::*}
 
 			
 on death:
