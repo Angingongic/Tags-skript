@@ -1,0 +1,320 @@
+on chat:
+	{suffix::%uuid of player%} is set
+	set {_l::*} to split chat format at "[player]"
+	set {_l2::*} to split {_l::1} at ""
+	set {_c} to "&r"
+	loop {_l2::*}:
+		set {_i} to loop-index parsed as a integer
+		set {_i2} to {_i} + 1
+		loop-value is "&" or "ยง"
+		set {_c} to colored "&%{_l2::%{_i2}%}%"
+	replace every "[player]" in chat format with "[player] %{suffix::%uuid of player%}%%{_c}%"
+command /suffixs <text> <player>:
+    permission: suffix.set
+    trigger:
+        if arg-1 is "off":
+            delete {suffix::%uuid of arg-player%}
+            message "&aSuffix deleted!"
+        else if arg-1 contains " ":
+            message "&cYou're suffix can't have spaces!"
+            stop
+        else if length of uncolored arg-1 > 100:
+            message "&cThe suffix is too long!"
+            stop
+        else:
+            set {suffix::%uuid of arg-player%} to colored arg-1
+            message "&aSuffix set!"
+command /taglist:
+	permission: op
+	trigger:
+		send "&c%{tags::%player's uuid%::*}%"
+		
+command /cleartags <player>:
+	permission: op
+	trigger:
+		delete {tags::%player's uuid%::*}
+
+
+	
+#this is a command
+command /tags:
+	trigger:
+		if {communitykills} is not set:
+			set {communitykills} to 0
+		delete {tags2::%player's uuid%::*} 
+		set {removetag.%player's uuid%} to false
+		set {selltag.%player's uuid%} to false
+		set {_gui} to a new chest inventory with 6 row with name "&b&k:&9Tags&b&k:"
+		set slot 0 of {_gui} to blue stained glass pane named "&a"		
+		set slot 1 of {_gui} to blue stained glass pane named "&a"
+		set slot 2 of {_gui} to blue stained glass pane named "&a"
+		set slot 3 of {_gui} to blue stained glass pane named "&a"
+		set slot 4 of {_gui} to blue stained glass pane named "&a"
+		set slot 5 of {_gui} to blue stained glass pane named "&a"
+		set slot 6 of {_gui} to blue stained glass pane named "&a"
+		set slot 7 of {_gui} to blue stained glass pane named "&a"
+		set slot 8 of {_gui} to blue stained glass pane named "&a"
+		set slot 9 of {_gui} to blue stained glass pane named "&a"
+		set slot 17 of {_gui} to blue stained glass pane named "&a"
+		set slot 18 of {_gui} to blue stained glass pane named "&a" 
+		set slot 22 of {_gui} to ender chest named "&aYour Inventory"
+		set slot 49 of {_gui} to chest named "&bCommunity Goals"
+		set slot 27 of {_gui} to blue stained glass pane named "&a"
+		set slot 26 of {_gui} to blue stained glass pane named "&a"
+		set slot 35 of {_gui} to blue stained glass pane named "&a" 
+		set slot 36 of {_gui} to blue stained glass pane named "&a"
+		set slot 40 of {_gui} to barrier block named "&4&k:&cRemove Tags&4&k:" 		
+		set slot 44 of {_gui} to blue stained glass pane named "&a" 
+		set slot 45 of {_gui} to blue stained glass pane named "&a"
+		set slot 46 of {_gui} to blue stained glass pane named "&a" 
+		set slot 47 of {_gui} to blue stained glass pane named "&a" 		
+		set slot 48 of {_gui} to blue stained glass pane named "&a" 		
+		set slot 50 of {_gui} to blue stained glass pane named "&a" 
+		set slot 51 of {_gui} to blue stained glass pane named "&a" 		 		
+		set slot 52 of {_gui} to blue stained glass pane named "&a" 
+		set slot 53 of {_gui} to blue stained glass pane named "&a" 		
+		set slot 54 of {_gui} to blue stained glass pane named "&a" 
+
+		open {_gui} to player
+
+
+
+
+
+on inventory click:
+	if name of event-inventory is "&b&k:&9Tags&b&k:":
+		cancel event
+		if index of event-slot = 22:
+			set {_taginv} to a new chest inventory with 6 row with name "&a&lYour Inventory"
+			set {_index} to 0
+			set {_index1} to 1
+			set {page.%player%} to 0
+			loop {tags::%player's uuid%::*}:
+				if {_index} < 45:
+					if {tags::%player's uuid%::%{_index1}%} is not "null":
+						if {tags::%player's uuid%::%{_index1}%} is set:
+							set slot {_index} of {_taginv} to nametag named {tags::%player's uuid%::%{_index1}%} with lore "&aClick to equip"
+						else:
+							set slot {_index} of {_taginv} to barrier named "&cBugged Slot" with lore "&7Just ignore this slot. It's unusable"
+					else:
+						set slot {_index} of {_taginv} to barrier named "&cBugged Slot" with lore "&7Just ignore this slot. It's unusable"
+					add 1 to {_index}
+					add 1 to {_index1}
+			set slot 45 of {_taginv} to arrow named "&aBack"
+			set slot 53 of {_taginv} to arrow named "&aNext Page"
+			if {removetag.%player's uuid%} is false:
+				set slot 48 of {_taginv} to barrier named "&aRemove tag Mode" with lore "&7Converts the tag back into a nametag where you can trade it to people. Click on a tag to remove it."
+			else:
+				set slot 48 of {_taginv} to diamond block named "&aTurn off Remove Tag Mode" with lore ""
+			if {selltag.%player's uuid%} is false:
+				set slot 50 of {_taginv} to gold ingot named "&aSell Tag Mode" with lore "&7Sells your tag."
+			else:
+				set slot 50 of {_taginv} to diamond block named "&aTurn off Sell Tag Mode" with lore ""
+			set slot 49 of {_taginv} to oak sign named "&aPage: &f%{page.%player%} + 1%"
+			open {_taginv} to player
+		if index of event-slot = 40:
+			delete {suffix::%uuid of player%}
+		if index of event-slot = 49:
+			set {_goal} to a new chest inventory with 3 row with name "&b&lCommunity Goals"
+			if {communitykills} < 500:
+				set slot 13 of {_goal} to nametag named "&x&0&9&f&b&2&1C&x&1&f&f&b&2&0o&x&3&4&f&b&2&0m&x&4&a&f&c&1&fm&x&6&0&f&c&1&eu&x&7&6&f&c&1&en&x&8&b&f&c&1&di&x&a&1&f&c&1&dt&x&b&7&f&c&1&cy &x&c&d&f&d&1&bT&x&e&2&f&d&1&ba&x&f&8&f&d&1&ag"
+				set slot 22 of {_goal} to arrow named "&aCommunity Kills &7(%{communitykills}%&7/500)" with lore "&7Finish the goal to get the tag."
+			else if {communitykills} > 499:
+				set slot 13 of {_goal} to gold block named "&6&lClaim Tag"
+			open {_goal} to player
+	if name of event-inventory is "&b&lCommunity Goals":
+		cancel event
+		if index of event-slot is 13:
+			if {communitykills} > 499:
+				if {col2.%player's uuid%} is not true:
+					execute console command "givetags &x&0&9&f&b&2&1C&x&1&f&f&b&2&0o&x&3&4&f&b&2&0m&x&4&a&f&c&1&fm&x&6&0&f&c&1&eu&x&7&6&f&c&1&en&x&8&b&f&c&1&di&x&a&1&f&c&1&dt&x&b&7&f&c&1&cy %player%"
+					set {col2.%player's uuid%} to true
+					send "&cYou claimed the tag."
+				else:
+					send "&cYou've already claimed this tag."
+	if name of event-inventory is "&a&lYour Inventory":
+		if index of event-slot = 45:
+			if name of event-item is "&aBack":
+				execute player command "/tags"
+		cancel event
+		if event-item is nametag:
+			if {removetag.%player's uuid%} and {selltag.%player's uuid%} is false:
+				if {tags::%player's uuid%::*} contains name of event-item:
+					if lore of event-item is "&aClick to equip":
+						set {suffix::%uuid of player%} to name of event-item
+						send "&aSuccessfully equipped tag %name of event-item%." to player
+					else:
+						cancel event
+				else:
+					send "&cYou don't own this tag. (Error code ##1)"
+			else if {removetag.%player's uuid%} is true:
+				if {tags::%player's uuid%::*} contains name of event-item:
+					if lore of event-item is "&aClick to equip":
+						if player has enough space for 1 white bed:
+							if {suffix::%uuid of player%} is name of event-item:
+								delete {suffix::%uuid of player%}
+							give player nametag named name of event-item
+							set {_ind} to 1
+							loop {tags::%player's uuid%::*}:
+								if loop-value is name of event-item:
+									set {tags::%player's uuid%::%{_ind}%} to "null"
+									add 1 to {_ind}
+							set event-slot to air
+						else:
+							send "&cYour inventory is full."
+					else:
+						cancel event
+				else:
+					send "&cThis item cannot be sold."
+			else if {selltag.%player's uuid%} is true:
+				if {tags::%player's uuid%::*} contains name of event-item:
+					if lore of event-item is "&aClick to equip":
+						if {suffix::%uuid of player%} is name of event-item:
+							delete {suffix::%uuid of player%}
+						execute console command "eco give %player% 50"
+						remove name of event-item from {tags::%player's uuid%::*}
+						set event-slot to air		
+					else:
+						cancel event
+				else:
+					send "&cThis item cannot be sold."
+							
+						
+
+		if index of event-slot = 53:
+			set {_taginv2} to a new chest inventory with 6 row with name "&a&lYour Inventory"
+			add 1 to {page.%player%}
+			set {_index} to 0
+			set {_index1} to 44 * {page.%player%}
+			loop {tags::%player's uuid%::*}:
+				if {tags::%player's uuid%::%{_index1}%} is set:
+					if {_index} < 45:
+						if {tags::%player's uuid%::%{_index1}%} is not "null":
+							if {tags::%player's uuid%::%{_index1}%} is set:
+								set slot {_index} of {_taginv2} to nametag named {tags::%player's uuid%::%{_index1}%} with lore "&aClick to equip"
+							else:
+								set slot {_index} of {_taginv2} to barrier named "&cBugged Slot" with lore "&7Just ignore this slot. It's unusable"
+						else:
+							set slot {_index} of {_taginv2} to barrier named "&cBugged Slot" with lore "&7Just ignore this slot. It's unusable"
+						add 1 to {_index1}
+						add 1 to {_index}
+			if {removetag.%player's uuid%} is false:
+				set slot 48 of {_taginv2} to barrier named "&aRemove tag Mode" with lore "&7Converts the tag back into a nametag where you can trade it to people. Click on a tag to remove it."
+			else:
+				set slot 48 of {_taginv2} to diamond block named "&aTurn off Remove Tag Mode" with lore ""
+			set slot 49 of {_taginv2} to oak sign named "&aPage: &f%{page.%player%} + 1%"
+			set slot 53 of {_taginv2} to arrow named "&aNext Page"
+			set slot 45 of {_taginv2} to arrow named "&aPrevious Page"
+			if {selltag.%player's uuid%} is false:
+				set slot 50 of {_taginv2} to gold ingot named "&aSell Tag Mode" with lore "&7Sells your tag."
+			else:
+				set slot 50 of {_taginv2} to diamond block named "&aTurn off Sell Tag Mode" with lore ""
+			open {_taginv2} to player
+		if index of event-slot = 45:
+			if name of event-item is "&aPrevious Page":
+				set {_taginv2} to a new chest inventory with 6 row with name "&a&lYour Inventory"
+				remove 1 from {page.%player%}
+				if {page.%player%} is not 0:
+					set {_index} to 0
+					set {_index1} to 44 * {page.%player%}
+					loop {tags::%player's uuid%::*}:
+						if {tags::%player's uuid%::%{_index1}%} is not "null":
+							if {tags::%player's uuid%::%{_index1}%} is set:
+								set slot {_index} of {_taginv2} to nametag named {tags::%player's uuid%::%{_index1}%} with lore "&aClick to equip"
+							else:
+								set slot {_index} of {_taginv2} to barrier named "&cBugged Slot" with lore "&7Just ignore this slot. It's unusable"
+						else:
+							set slot {_index} of {_taginv2} to barrier named "&cBugged Slot" with lore "&7Just ignore this slot. It's unusable"
+						add 1 to {_index1}
+						add 1 to {_index}
+					if {removetag.%player's uuid%} is false:
+						set slot 48 of {_taginv2} to barrier named "&aRemove tag Mode" with lore "&7Converts the tag back into a nametag where you can trade it to people. Click on a tag to remove it."
+					else:
+						set slot 48 of {_taginv2} to diamond block named "&aTurn off Remove Tag Mode" with lore ""
+					set slot 49 of {_taginv2} to oak sign named "&aPage: &f%{page.%player%} + 1%"
+					set slot 53 of {_taginv2} to arrow named "&aNext Page"
+					if {selltag.%player's uuid%} is false:
+						set slot 50 of {_taginv2} to gold ingot named "&aSell Tag Mode" with lore "&7Sells your tag."
+					else:
+						set slot 50 of {_taginv2} to diamond block named "&aTurn off Sell Tag Mode" with lore ""
+					if {page.%player%} is 0:
+						set slot 45 of {_taginv2} to arrow named "&aBack"
+					else:
+						set slot 45 of {_taginv2} to arrow named "&aPrevious Page"
+					open {_taginv2} to player
+				else:
+					set {_index} to 0
+					set {_index1} to 1
+					set {page.%player%} to 0
+					loop {tags::%player's uuid%::*}:
+						if {tags::%player's uuid%::%{_index1}%} is not "null":
+							if {tags::%player's uuid%::%{_index1}%} is set:
+								set slot {_index} of {_taginv2} to nametag named {tags::%player's uuid%::%{_index1}%} with lore "&aClick to equip"
+							else:
+								set slot {_index} of {_taginv2} to barrier named "&cBugged Slot" with lore "&7Just ignore this slot. It's unusable"
+						else:
+							set slot {_index} of {_taginv2} to barrier named "&cBugged Slot" with lore "&7Just ignore this slot. It's unusable"
+						add 1 to {_index}
+						add 1 to {_index1}
+					if {removetag.%player's uuid%} is false:
+						set slot 48 of {_taginv2} to barrier named "&aRemove tag Mode" with lore "&7Converts the tag back into a nametag where you can trade it to people. Click on a tag to remove it."
+					else:
+						set slot 48 of {_taginv2} to diamond block named "&aTurn off Remove Tag Mode" with lore ""
+					set slot 49 of {_taginv2} to oak sign named "&aPage: &f%{page.%player%} + 1%"
+						
+					set slot 45 of {_taginv2} to arrow named "&aBack"
+					set slot 53 of {_taginv2} to arrow named "&aNext Page"
+					if {selltag.%player's uuid%} is false:
+						set slot 50 of {_taginv2} to gold ingot named "&aSell Tag Mode" with lore "&7Sells your tag."
+					else:
+						set slot 50 of {_taginv2} to diamond block named "&aTurn off Sell Tag Mode" with lore ""
+					open {_taginv2} to player
+		if index of event-slot = 48:
+			if {selltag.%player's uuid%} is false:
+				if {removetag.%player's uuid%} is false:
+					set {removetag.%player's uuid%} to true
+					set slot 48 of event-inventory to diamond block named "&aTurn off Remove Tag Mode" with lore ""
+				else:
+					set {removetag.%player's uuid%} to false
+					set slot 48 of event-inventory to barrier named "&aRemove tag Mode" with lore "&7Converts the tag back into a nametag where you can trade it to people. Click on a tag to remove it."
+			else:
+				send "&cTurn sell mode off first."
+		if index of event-slot = 50:
+			if {removetag.%player's uuid%} is false:
+				if {selltag.%player's uuid%} is false:
+					set {selltag.%player's uuid%} to true
+					set slot 50 of event-inventory to diamond block named "&aTurn off Sell Tag Mode" with lore ""
+				else:
+					set {selltag.%player's uuid%} to false
+					set slot 50 of event-inventory to gold ingot named "&aSell Tag Mode" with lore "&7Sells the tag."
+			else:
+				send "&cTurn remove mode off first."
+				
+
+
+
+			
+on death:
+	if attacker is a player:
+		if victim is a player:
+			add 1 to {communitykills}
+
+command /removealltags <player>:
+	permission: tags.admin
+	trigger:	
+		delete {tags::%player's uuid%::*}
+		
+command /givetags <string> <player>:
+	permission: tags.admin
+	trigger:
+		if {tags::%arg-player's uuid%::*} does not contain colored arg-1:
+			add colored arg-1 to {tags::%arg-player's uuid%::*}
+			send "&aSuccessfully gave &f%arg-2%&r %colored arg-1%&f &aTag."
+		else:
+			send "&cThis player already has this tag."
+		
+command /removetag <string> <player>:
+	permission: tags.admin
+	trigger:
+		remove colored arg-1 from {tags::%arg-player's uuid%::*}
+		send "&aSuccessfully removed &f%arg-2%&r %colored arg-1%&f &aTag."
